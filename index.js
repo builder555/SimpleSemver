@@ -26,8 +26,7 @@ function formatReleaseNotes(notes) {
   return releaseNotes;
 }
 function parseCommits(messages, lastVersion) {
-  let [major, minor, patch] = lastVersion.split(".").map(Number);
-  console.log(`Last version: ${lastVersion}`, major, minor, patch);
+  let [major=0, minor=0, patch=0] = lastVersion.split(".").map(Number);
   const notes = {
     breaking: [],
     features: [],
@@ -58,7 +57,7 @@ function parseCommits(messages, lastVersion) {
 }
 
 try {
-  const lastVersion = core.getInput("last-version") ?? "0.0.0";
+  const lastVersion = core.getInput("last-version");
   const sinceHash = core.getInput("last-hash");
   const messages = getCommitMessages(sinceHash);
   const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
