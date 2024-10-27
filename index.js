@@ -3,10 +3,12 @@ const github = require("@actions/github");
 
 function getCommitMessages(sinceHash) {
   const commits = github.context.payload.commits;
+  console.log(`Found ${commits.length} commits, checking since ${sinceHash}`);
   if (sinceHash) {
     const sinceIndex = commits.findIndex((c) => c.sha === sinceHash);
     commits.splice(0, sinceIndex);
   }
+  console.log(commits);
   return commits.map((c) => `${c.message.toLowerCase()} (${c.sha.slice(0, 7)})`);
 }
 function formatReleaseNotes(notes) {
