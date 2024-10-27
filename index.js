@@ -57,7 +57,7 @@ function parseCommits(messages, lastVersion) {
 }
 
 try {
-  const lastVersion = core.getInput("last-version");
+  const lastVersion = core.getInput("last-version") ?? "0.0.0";
   const sinceHash = core.getInput("last-hash");
   const messages = getCommitMessages(sinceHash);
   const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
