@@ -10,6 +10,12 @@ inputs:
     required: false
     default: ''
 outputs:
+  major:
+    description: 'New major version'
+  minor:
+    description: 'New minor version'
+  patch:
+    description: 'New patch version'
   version: 
     description: 'New version in semver format (major.minor.patch)'
   release-notes: 

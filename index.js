@@ -53,18 +53,22 @@ function parseCommits(messages, lastVersion) {
     }
   }
   let releaseNotes = formatReleaseNotes(notes);
-  return { releaseNotes, newVersion: `${major}.${minor}.${patch}` };
+  return { releaseNotes, major, minor, patch };
 }
 
 try {
   const lastVersion = core.getInput("last-version");
   const sinceHash = core.getInput("last-hash");
   const messages = getCommitMessages(sinceHash);
-  const { releaseNotes, newVersion } = parseCommits(messages, lastVersion);
+  const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
+  const newVersion = `${major}.${minor}.${patch}`;
   if (lastVersion == newVersion) {
     console.log("No new release");
     return;
   }
+  core.setOutput("major", major);
+  core.setOutput("minor", minor);
+  core.setOutput("patch", patch);
   core.setOutput("version", newVersion);
   core.setOutput("release-notes", releaseNotes);
   console.log(`New version: ${newVersion}\nRelease notes: \n${releaseNotes}`);
