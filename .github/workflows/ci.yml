@@ -19,7 +19,7 @@ jobs:
       run: |
         LAST_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | tr -d -c 0-9.)
         echo "last version $LAST_VERSION"
-        COMMIT_HASH=$(git rev-parse v$LAST_VERSION)
+        COMMIT_HASH=$(git rev-parse v$LAST_VERSION 2>/dev/null)
         echo "last hash $COMMIT_HASH"
         echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
         echo "version=$LAST_VERSION" >> $GITHUB_OUTPUT
