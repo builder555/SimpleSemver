@@ -12,16 +12,16 @@ function getCommitMessages(sinceHash) {
 function formatReleaseNotes(notes) {
   let releaseNotes = "";
   if(notes.breaking.length > 0) {
-    releaseNotes += `## Breaking Changes\n*${notes.breaking.join("\n*")}\n\n`;
+    releaseNotes += `## Breaking Changes\n* ${notes.breaking.join("\n* ")}\n\n`;
   }
   if(notes.features.length > 0) {
-    releaseNotes += `## Features\n*${notes.features.join("\n*")}\n\n`;
+    releaseNotes += `## Features\n* ${notes.features.join("\n* ")}\n\n`;
   }
   if(notes.fixes.length > 0) {
-    releaseNotes += `## Fixes\n*${notes.fixes.join("\n*")}\n\n`;
+    releaseNotes += `## Fixes\n* ${notes.fixes.join("\n* ")}\n\n`;
   }
   if(notes.other.length > 0) {
-    releaseNotes += `## Other\n*${notes.other.join("\n*")}\n\n`;
+    releaseNotes += `## Other\n* ${notes.other.join("\n* ")}\n\n`;
   }
   return releaseNotes;
 }
