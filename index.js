@@ -69,5 +69,6 @@ try {
   core.setOutput("release-notes", releaseNotes);
   console.log(`New version: ${newVersion}\nRelease notes: \n${releaseNotes}`);
 } catch (error) {
-  core.setFailed(error.message);
+  const errorLine = error.stack.split("\n")[1];
+  core.setFailed(`${error.message} (${errorLine})`);
 }
