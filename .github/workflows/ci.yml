@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get last version and hash
+      id: last-version
+      run: |
+        LAST_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | tr -d -c 0-9.)
+        COMMIT_HASH=$(git rev-parse v$LAST_VERSION)
+        echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+        echo "version=$LAST_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Semver Action
+      id: semver-action
+      uses: builder555/simple-semver@master
+      with:
+        last-version: ${{ steps.last-version.outputs.version }}
+        last-hash: ${{ steps.last-version.outputs.hash }}
+
+    - name: Commit version changes
+      if: steps.semver-action.outputs.version != ''
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add pyproject.toml
+        git commit -m "chore: bump version to v${{ steps.semver-action.outputs.version }}"
+        git tag v${{ steps.semver-action.outputs.version }}
+        git tag v${{ steps.semver-action.outputs.major }} 2>/dev/null
+    
+    - name: Push changes
+      if: steps.semver-action.outputs.version != ''
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+        tags: true
+
+    - name: Create Release
+      if: steps.semver-action.outputs.version != ''
+      id: create-release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.semver-action.outputs.version }}
+        body: ${{ steps.semver-action.outputs.release-notes }}
