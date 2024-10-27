@@ -17,8 +17,8 @@ jobs:
     - name: Get last version and hash
       id: last-version
       run: |
-        LAST_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | tr -d -c 0-9. || echo 0.0.0)
-        COMMIT_HASH=$(git rev-parse v$LAST_VERSION 2>/dev/null || echo "")
+        LAST_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | tr -d -c 0-9. || echo 0.0.0) || true
+        COMMIT_HASH=$(git rev-parse v$LAST_VERSION 2>/dev/null || echo "") || true
         echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
         echo "version=$LAST_VERSION" >> $GITHUB_OUTPUT
 
@@ -34,10 +34,8 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add pyproject.toml
-        git commit -m "chore: bump version to v${{ steps.semver-action.outputs.version }}"
-        git tag v${{ steps.semver-action.outputs.version }}
-        git tag v${{ steps.semver-action.outputs.major }} 2>/dev/null
+        git tag -a v${{ steps.semver-action.outputs.version }}
+        git tag -a v${{ steps.semver-action.outputs.major }} 2>/dev/null
     
     - name: Push changes
       if: steps.semver-action.outputs.version != ''
