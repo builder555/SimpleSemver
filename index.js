@@ -11,22 +11,22 @@ function getCommitMessages(sinceHash) {
 }
 function formatReleaseNotes(notes) {
   let releaseNotes = "";
-  if(notes.breaking.length > 0) {
+  if (notes.breaking.length > 0) {
     releaseNotes += `## Breaking Changes\n* ${notes.breaking.join("\n* ")}\n\n`;
   }
-  if(notes.features.length > 0) {
+  if (notes.features.length > 0) {
     releaseNotes += `## Features\n* ${notes.features.join("\n* ")}\n\n`;
   }
-  if(notes.fixes.length > 0) {
+  if (notes.fixes.length > 0) {
     releaseNotes += `## Fixes\n* ${notes.fixes.join("\n* ")}\n\n`;
   }
-  if(notes.other.length > 0) {
+  if (notes.other.length > 0) {
     releaseNotes += `## Other\n* ${notes.other.join("\n* ")}\n\n`;
   }
   return releaseNotes;
 }
 function parseCommits(messages, lastVersion) {
-  let [major=0, minor=0, patch=0] = lastVersion.split(".").map(Number);
+  let [major = 0, minor = 0, patch = 0] = lastVersion.split(".").map(Number);
   const notes = {
     breaking: [],
     features: [],
