@@ -27,6 +27,7 @@ function formatReleaseNotes(notes) {
 }
 function parseCommits(messages, lastVersion) {
   let [major, minor, patch] = lastVersion.split(".").map(Number);
+  console.log(`Last version: ${lastVersion}`, major, minor, patch);
   const notes = {
     breaking: [],
     features: [],
