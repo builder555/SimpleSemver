@@ -1,0 +1,19 @@
+name: 'Simple Semver'
+description: 'Parse commits and create a new version with release notes'
+inputs:
+  last-version:
+    description: 'Current version in semver format (major.minor.patch)'
+    required: false
+    default: '0.0.0'
+  last-hash:
+    description: 'Full hash of the last versioned commit'
+    required: false
+    default: ''
+outputs:
+  version: 
+    description: 'New version in semver format (major.minor.patch)'
+  release-notes: 
+    description: 'Commit messages grouped by fix/feat/other'
+runs:
+  using: 'node20'
+  main: 'index.js'
