@@ -59,7 +59,9 @@ function parseCommits(messages, lastVersion) {
 try {
   const lastVersion = core.getInput("last-version");
   const sinceHash = core.getInput("last-hash");
+  console.log(`Last version: ${lastVersion}\nSince hash: ${sinceHash}`);
   const messages = getCommitMessages(sinceHash);
+  console.log(`Parsing ${messages.length} commit messages...`);
   const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
   const newVersion = `${major}.${minor}.${patch}`;
   if (lastVersion == newVersion) {
