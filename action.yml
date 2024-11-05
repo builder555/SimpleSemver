@@ -9,6 +9,9 @@ inputs:
     description: 'Full hash of the last versioned commit'
     required: false
     default: ''
+  github-token:
+    description: 'GITHUB_TOKEN'
+    required: true
 outputs:
   major:
     description: 'New major version'

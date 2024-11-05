@@ -28,6 +28,7 @@ jobs:
       with:
         last-version: ${{ steps.last-version.outputs.version }}
         last-hash: ${{ steps.last-version.outputs.hash }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit version changes
       if: steps.semver-action.outputs.version != ''

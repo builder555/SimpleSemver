@@ -1,8 +1,57 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 
-function getCommitMessages(sinceHash) {
-  const commits = github.context.repo.commits;
+
+async function getAllCommits(sinceHash, token) {
+  try {
+    
+    const octokit = github.getOctokit(token);
+    
+    const { owner, repo } = github.context.repo;
+    
+    const commits = [];
+    let page = 1;
+    let shouldGetMoreCommits = true;
+
+    while (shouldGetMoreCommits) {
+      const response = await octokit.rest.repos.listCommits({
+        owner,
+        repo,
+        per_page: 100,
+        page
+      });
+      response.data.forEach((commit) => {
+        if (commit.sha === sinceHash) {
+          shouldGetMoreCommits = false;
+        }
+        if (shouldGetMoreCommits) {
+          commits.push({
+            id: commit.sha,
+            message: commit.commit.message
+          });
+        }
+      });
+
+      if (response.data.length < 100) {
+        shouldGetMoreCommits = false;
+      } else {
+        page += 1;
+      }
+    }
+    
+    return commits;
+  } catch (error) {
+    core.setFailed(`Failed to retrieve commits: ${error.message}`);
+  }
+}
+
+
+
+
+
+
+async function getCommitMessages(sinceHash, token) {
+  const commits = await getAllCommits(sinceHash, token);
   console.log(`Found: ${commits.length} commits`);
   if (sinceHash) {
     const sinceIndex = commits.findIndex((c) => c.id === sinceHash);
@@ -60,21 +109,23 @@ function parseCommits(messages, lastVersion) {
 try {
   const lastVersion = core.getInput("last-version");
   const sinceHash = core.getInput("last-hash");
+  const token = core.getInput('github-token', { required: true });
   console.log(`Last version: ${lastVersion}\nSince hash: ${sinceHash}`);
-  const messages = getCommitMessages(sinceHash);
-  console.log(`Parsing ${messages.length} commit messages...`);
-  const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
-  const newVersion = `${major}.${minor}.${patch}`;
-  if (lastVersion == newVersion) {
-    console.log("No new release");
-    return;
-  }
-  core.setOutput("major", major);
-  core.setOutput("minor", minor);
-  core.setOutput("patch", patch);
-  core.setOutput("version", newVersion);
-  core.setOutput("release-notes", releaseNotes);
-  console.log(`New version: ${newVersion}\nRelease notes: \n${releaseNotes}`);
+  getCommitMessages(sinceHash, token).then(messages => {
+    console.log(`Parsing ${messages.length} commit messages...`);
+    const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
+    const newVersion = `${major}.${minor}.${patch}`;
+    if (lastVersion == newVersion) {
+      console.log("No new release");
+      return;
+    }
+    core.setOutput("major", major);
+    core.setOutput("minor", minor);
+    core.setOutput("patch", patch);
+    core.setOutput("version", newVersion);
+    core.setOutput("release-notes", releaseNotes);
+    console.log(`New version: ${newVersion}\nRelease notes: \n${releaseNotes}`);
+  });
 } catch (error) {
   const errorLine = error.stack.split("\n")[1];
   core.setFailed(`${error.message} (${errorLine})`);
