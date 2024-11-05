@@ -2,7 +2,8 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 
 function getCommitMessages(sinceHash) {
-  const commits = github.context.payload.commits;
+  const commits = github.context.repo.commits;
+  console.log(`Found: ${commits.length} commits`);
   if (sinceHash) {
     const sinceIndex = commits.findIndex((c) => c.id === sinceHash);
     commits.splice(0, sinceIndex);
