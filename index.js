@@ -51,6 +51,7 @@ async function getCommitMessages(sinceHash, token) {
   }
   return commits.map((c) => `${c.message.toLowerCase()} (${c.id.slice(0, 7)})`);
 }
+
 function formatReleaseNotes(notes) {
   let releaseNotes = "";
   if (notes.breaking.length > 0) {
@@ -67,6 +68,7 @@ function formatReleaseNotes(notes) {
   }
   return releaseNotes;
 }
+
 function parseCommits(messages, lastVersion) {
   let [major = 0, minor = 0, patch = 0] = lastVersion.split(".").map(Number);
   const notes = {
