@@ -1,10 +1,9 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 
-
 async function getAllCommits(sinceHash, token) {
   try {
-    
+    console.log(`Getting all commits since ${sinceHash}`);
     const octokit = github.getOctokit(token);
     
     const { owner, repo } = github.context.repo;
@@ -21,6 +20,7 @@ async function getAllCommits(sinceHash, token) {
         page
       });
       response.data.forEach((commit) => {
+        console.log(`Found commit:: ${commit.sha}\nmessage:: ${commit.commit.message}`);
         if (commit.sha === sinceHash) {
           shouldGetMoreCommits = false;
         }
@@ -44,11 +44,6 @@ async function getAllCommits(sinceHash, token) {
     core.setFailed(`Failed to retrieve commits: ${error.message}`);
   }
 }
-
-
-
-
-
 
 async function getCommitMessages(sinceHash, token) {
   const commits = await getAllCommits(sinceHash, token);
