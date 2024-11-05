@@ -3,7 +3,6 @@ const github = require("@actions/github");
 
 async function getAllCommits(sinceHash, token) {
   try {
-    console.log(`Getting all commits since ${sinceHash}`);
     const octokit = github.getOctokit(token);
     
     const { owner, repo } = github.context.repo;
@@ -20,7 +19,6 @@ async function getAllCommits(sinceHash, token) {
         page
       });
       response.data.forEach((commit) => {
-        console.log(`Found commit:: ${commit.sha}\nmessage:: ${commit.commit.message}`);
         if (commit.sha === sinceHash) {
           shouldGetMoreCommits = false;
         }
@@ -47,7 +45,6 @@ async function getAllCommits(sinceHash, token) {
 
 async function getCommitMessages(sinceHash, token) {
   const commits = await getAllCommits(sinceHash, token);
-  console.log(`Found: ${commits.length} commits`);
   if (sinceHash) {
     const sinceIndex = commits.findIndex((c) => c.id === sinceHash);
     commits.splice(0, sinceIndex);
@@ -105,7 +102,6 @@ try {
   const lastVersion = core.getInput("last-version");
   const sinceHash = core.getInput("last-hash");
   const token = core.getInput('github-token', { required: true });
-  console.log(`Last version: ${lastVersion}\nSince hash: ${sinceHash}`);
   getCommitMessages(sinceHash, token).then(messages => {
     console.log(`Parsing ${messages.length} commit messages...`);
     const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);

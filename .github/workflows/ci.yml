@@ -31,27 +31,27 @@ jobs:
         last-hash: ${{ steps.last-version.outputs.hash }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Commit version changes
-    #   if: steps.semver-action.outputs.version != ''
-    #   run: |
-    #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-    #     git config --local user.name "github-actions[bot]"
-    #     git tag -d v${{ steps.semver-action.outputs.major }} 2>/dev/null || true
-    #     git tag -a v${{ steps.semver-action.outputs.major }} -m "Creating release v${{ steps.semver-action.outputs.major }}"
-    #     git tag -a v${{ steps.semver-action.outputs.version }} -m "Creating release v${{ steps.semver-action.outputs.version }}"
+    - name: Commit version changes
+      if: steps.semver-action.outputs.version != ''
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git tag -d v${{ steps.semver-action.outputs.major }} 2>/dev/null || true
+        git tag -a v${{ steps.semver-action.outputs.major }} -m "Creating release v${{ steps.semver-action.outputs.major }}"
+        git tag -a v${{ steps.semver-action.outputs.version }} -m "Creating release v${{ steps.semver-action.outputs.version }}"
     
-    # - name: Push changes
-    #   if: steps.semver-action.outputs.version != ''
-    #   uses: ad-m/github-push-action@master
-    #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     branch: ${{ github.ref }}
-    #     tags: true
+    - name: Push changes
+      if: steps.semver-action.outputs.version != ''
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+        tags: true
 
-    # - name: Create Release
-    #   if: steps.semver-action.outputs.version != ''
-    #   id: create-release
-    #   uses: softprops/action-gh-release@v2
-    #   with:
-    #     tag_name: v${{ steps.semver-action.outputs.version }}
-    #     body: ${{ steps.semver-action.outputs.release-notes }}
+    - name: Create Release
+      if: steps.semver-action.outputs.version != ''
+      id: create-release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ steps.semver-action.outputs.version }}
+        body: ${{ steps.semver-action.outputs.release-notes }}
