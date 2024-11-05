@@ -36,8 +36,7 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git tag -d v${{ steps.semver-action.outputs.major }} 2>/dev/null || true
-        git tag -a v${{ steps.semver-action.outputs.major }} -m "Creating release v${{ steps.semver-action.outputs.major }}"
+        git tag -f v${{ steps.semver-action.outputs.major }} -m "Creating release v${{ steps.semver-action.outputs.major }}"
         git tag -a v${{ steps.semver-action.outputs.version }} -m "Creating release v${{ steps.semver-action.outputs.version }}"
     
     - name: Push changes
@@ -47,6 +46,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
         tags: true
+        force: true
 
     - name: Create Release
       if: steps.semver-action.outputs.version != ''
