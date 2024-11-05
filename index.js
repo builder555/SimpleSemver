@@ -37,7 +37,7 @@ async function getAllCommits(sinceHash, token) {
       }
     }
     
-    return commits;
+    return commits.reverse();
   } catch (error) {
     core.setFailed(`Failed to retrieve commits: ${error.message}`);
   }
