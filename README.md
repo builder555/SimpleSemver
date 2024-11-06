@@ -30,7 +30,7 @@ jobs:
         id: last-version
         # this assumes you use tags like v0.0.1 - that's what it uses to get hash of the last tagged version
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "") || true
+          LAST_TAG=$(git describe --tags --abbrev=0 --match "v*.*.*" 2>/dev/null || echo "") || true
           LAST_VERSION=$(echo $LAST_TAG | tr -d -c 0-9. || echo 0.0.0) || true
           COMMIT_HASH=$(git rev-list -n 1 $LAST_TAG 2>/dev/null || echo "") || true
           echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
