@@ -13,7 +13,10 @@ Use in your workflow:
 
 ```yaml
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   semver-action:
@@ -38,7 +41,7 @@ jobs:
 
       - name: Semver Action
         id: semver-action
-        uses: builder555/simple-semver@v1
+        uses: builder555/simple-semver@v2
         with:
           last-version: ${{ steps.last-version.outputs.version }}
           last-hash: ${{ steps.last-version.outputs.hash }}
