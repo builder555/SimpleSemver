@@ -15,21 +15,22 @@ Only prefixes `fix! feat! fix: feat: chore:` are removed from the commit message
 
 The action creates release notes that look like this:
 
-## Breaking Changes
-* initial commit (5171b04)
+> ## Breaking Changes
+> * initial commit (5171b04)
+> 
+> ## Features
+> * testing partial ci workflow (526cbfd)
+> * create a release automatically (7b62781)
+> 
+> ## Fixes
+> * do not reinitialize websocket every time (6fb5826)
+> * remove obsoleted version (9364747)
+> 
+> ## Other
+> * moved gitignore (38b4319)
+> * readme typo (14b622a)
+> * bump version to v1.13.18 (33c87cc)
 
-## Features
-* testing partial ci workflow (526cbfd)
-* create a release automatically (7b62781)
-
-## Fixes
-* do not reinitialize websocket every time (6fb5826)
-* remove obsoleted version (9364747)
-
-## Other
-* moved gitignore (38b4319)
-* readme typo (14b622a)
-* bump version to v1.13.18 (33c87cc)
 
 Use in your workflow:
 
