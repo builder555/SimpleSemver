@@ -100,25 +100,61 @@ function parseCommits(messages, lastVersion) {
   return { releaseNotes, major, minor, patch };
 }
 
-try {
-  const lastVersion = core.getInput("last-version");
-  const sinceHash = core.getInput("last-hash");
-  const token = core.getInput('github-token', { required: true });
-  getCommitMessages(sinceHash, token).then(messages => {
-    console.log(`Parsing ${messages.length} commit messages...`);
-    const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
-    const newVersion = `${major}.${minor}.${patch}`;
-    if (lastVersion == newVersion) {
-      console.log("No new release");
-      return;
+async function fetchLatestVersionAndHash (token) {
+  const octokit = github.getOctokit(token);
+  const { owner, repo } = github.context.repo;
+  let page = 1;
+  let hasMoreTags = true;
+  while(hasMoreTags) {
+    const { data: tags } = await octokit.rest.repos.listTags({
+      owner,
+      repo,
+      per_page: 100,
+      page,
+    });
+    hasMoreTags = tags.length > 0;
+    page++;
+    // only match tags that look like "v3.0.0" or "v 3.0.0" 
+    const versionTags = tags.filter(tag => tag.name.match(/^v[^\d]*\d+\.\d+\.\d+$/i));
+    
+    if (versionTags.length > 0) {
+      const version = versionTags[0].name.replace(/[^\d.]/g, '');
+      const hash = versionTags[0].commit.sha;
+      return {
+        version,
+        hash
+      }
     }
-    core.setOutput("major", major);
-    core.setOutput("minor", minor);
-    core.setOutput("patch", patch);
-    core.setOutput("version", newVersion);
-    core.setOutput("release-notes", releaseNotes);
-    console.log(`New version: ${newVersion}\nRelease notes: \n${releaseNotes}`);
-  });
+  }
+  return { version: '0.0.0', hash: '' };
+}
+
+async function main() {
+  let lastVersion = core.getInput("last-version");
+  let sinceHash = core.getInput("last-hash");
+  const token = core.getInput('github-token', { required: true });
+
+  if (!lastVersion || !sinceHash) {
+    ({ version: lastVersion, hash: sinceHash } = await fetchLatestVersionAndHash(token));
+  }
+  const messages = await getCommitMessages(sinceHash, token);
+  console.log(`Parsing ${messages.length} commit messages...`);
+  const { releaseNotes, major, minor, patch } = parseCommits(messages, lastVersion);
+  const newVersion = `${major}.${minor}.${patch}`;
+  if (lastVersion == newVersion) {
+    console.log("No new release");
+    return;
+  }
+  core.setOutput("major", major);
+  core.setOutput("minor", minor);
+  core.setOutput("patch", patch);
+  core.setOutput("version", newVersion);
+  core.setOutput("release-notes", releaseNotes);
+  console.log(`New version: ${newVersion}\nRelease notes: \n${releaseNotes}`);
+}
+
+try {
+  main();
 } catch (error) {
   const errorLine = error.stack.split("\n")[1];
   core.setFailed(`${error.message} (${errorLine})`);
